@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Tareas</title>
+</head>
+<body>
+    <h1>Lista de Tareas</h1>
+    <ul id="task-list"></ul>
+    <input type="text" id="new-task" placeholder="Nueva tarea">
+    <button onclick="addTask()">Agregar Tarea</button>
+    <button onclick="deleteAllTasks()">Eliminar Todas las Tareas</button>
+
+    <script>
+        function fetchTasks() {
+            fetch('/tareas')
+                .then(response => response.json())
+                .then(data => {
+                    const taskList = document.getElementById('task-list');
+                    taskList.innerHTML = '';
+                    data.forEach(task => {
+                        const li = document.createElement('li');
+                        li.textContent = task.name; // Cambia esto según la estructura de tu tarea
+                        li.onclick = () => deleteTask(task.id);
+                        taskList.appendChild(li);
+                    });
+                });
+        }
+
+        function addTask() {
+            const taskName = document.getElementById('new-task').value;
+            fetch('/tareas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: taskName }) // Cambia esto según la estructura de tu tarea
+            })
+            .then(() => {
+                document.getElementById('new-task').value = '';
+                fetchTasks();
+            });
+        }
+
+        function deleteTask(id) {
+            fetch(`/tareas/${id}`, { method: 'DELETE' })
+                .then(fetchTasks);
+        }
+
+        function deleteAllTasks() {
+            fetch('/tareas', { method: 'DELETE' })
+                .then(fetchTasks);
+        }
+
+        // Cargar tareas al iniciar
+        fetchTasks();
+    </script>
+</body>
+</html>

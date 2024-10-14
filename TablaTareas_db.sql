@@ -1,0 +1,5 @@
+CREATE TABLE tareas_db (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    text VARCHAR(255) NOT NULL,
+    completed BOOLEAN DEFAULT FALSE
+);
